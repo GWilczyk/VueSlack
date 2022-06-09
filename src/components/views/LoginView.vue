@@ -52,7 +52,10 @@ import {
 } from 'firebase/auth'
 
 import { authInstance } from '@/firebase'
+import { getDatabase, ref, set } from 'firebase/database'
 import {
+  SAVE_USER_TO_DB_REQUEST,
+  SAVE_USER_TO_DB_SUCCESS,
   USER_LOGIN_FAILED,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS
@@ -64,7 +67,13 @@ export default {
     ...mapGetters(['hasErrors', 'isLoading'])
   },
   methods: {
-    ...mapActions([USER_LOGIN_FAILED, USER_LOGIN_REQUEST, USER_LOGIN_SUCCESS]),
+    ...mapActions([
+      SAVE_USER_TO_DB_REQUEST,
+      SAVE_USER_TO_DB_SUCCESS,
+      USER_LOGIN_FAILED,
+      USER_LOGIN_REQUEST,
+      USER_LOGIN_SUCCESS
+    ]),
     handleFacebookLogin: function () {
       const FacebookProvider = new FacebookAuthProvider()
 
@@ -87,11 +96,21 @@ export default {
       signInWithPopup(authInstance, GoogleProvider)
         .then((response) => {
           this.USER_LOGIN_SUCCESS(response.user)
+          this.saveUserToUsersRef(response.user)
           this.$router.push('/')
         })
         .catch((error) => {
           this.USER_LOGIN_FAILED(error)
         })
+    },
+    saveUserToUsersRef: function (user) {
+      this.SAVE_USER_TO_DB_REQUEST()
+      const db = getDatabase()
+      set(ref(db, `users/${user.uid}`), {
+        avatar: user.photoURL,
+        displayName: user.displayName
+      })
+      this.SAVE_USER_TO_DB_SUCCESS()
     }
   }
 }

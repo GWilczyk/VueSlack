@@ -3,11 +3,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-4 sidebar">
-          <h2 class="text-light">VuexSlack</h2>
-          <hr style="border: 1px solid #333" />
-          <button class="btn btn-outline-light" @click="handleLogout">
-            Logout
-          </button>
+          <sidebar></sidebar>
         </div>
 
         <div class="col-md-8 content">content</div>
@@ -17,18 +13,11 @@
 </template>
 
 <script>
-import { authInstance } from '@/firebase'
-import { USER_LOGOUT } from '@/store/mutation-types'
+import Sidebar from '@/components/Sidebar'
 
 export default {
   name: 'ChatView',
-  methods: {
-    handleLogout: function () {
-      authInstance.signOut()
-      this.$store.dispatch(USER_LOGOUT)
-      this.$router.push('/login')
-    }
-  }
+  components: { sidebar: Sidebar }
 }
 </script>
 
