@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import ChatView from '@/components/views/ChatView'
-import LoginView from '@/components/views/LoginView'
+import ChatView from '@/views/ChatView'
+import LoginView from '@/views/LoginView'
 
 import { authInstance } from '@/firebase'
 
