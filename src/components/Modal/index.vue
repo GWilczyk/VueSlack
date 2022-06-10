@@ -67,7 +67,8 @@ import {
 } from '@/store/mutation-types'
 
 export default {
-  name: 'ModalDialog',
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: 'Modal',
   props: ['showModal', 'toggleModal'],
   computed: {
     ...mapGetters(['hasErrors', 'isLoading']),

@@ -6,18 +6,21 @@
           <sidebar></sidebar>
         </div>
 
-        <div class="col-md-8 content">content</div>
+        <div class="col-md-8 content">
+          <messages></messages>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Sidebar from '@/components/Sidebar'
+import Messages from '@/components/messages/Messages'
+import Sidebar from '@/components/sidebar/Sidebar'
 
 export default {
   name: 'ChatView',
-  components: { sidebar: Sidebar }
+  components: { messages: Messages, sidebar: Sidebar }
 }
 </script>
 

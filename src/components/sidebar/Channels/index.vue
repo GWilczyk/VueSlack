@@ -27,7 +27,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 
-import ModalDialog from '@/components/ModalDialog'
+import Modal from '@/components/Modal'
 import { getDatabase, off, onChildAdded, ref } from '@firebase/database'
 import {
   CREATE_CHANNEL_RESET,
@@ -45,7 +45,7 @@ export default {
     }
   },
   components: {
-    'modal-dialog': ModalDialog
+    'modal-dialog': Modal
   },
   computed: {
     ...mapGetters(['getChannels', 'getCurrentChannel'])
@@ -98,4 +98,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+button.active {
+  z-index: 0;
+}
+</style>
