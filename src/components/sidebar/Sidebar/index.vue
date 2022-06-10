@@ -31,7 +31,7 @@ import { mapGetters } from 'vuex'
 import { authInstance } from '@/firebase'
 import { USER_LOGOUT } from '@/store/mutation-types'
 
-import Channels from '@/components/Channels'
+import Channels from '@/components/sidebar/Channels'
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
