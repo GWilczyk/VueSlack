@@ -98,4 +98,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+button.active {
+  z-index: 0;
+}
+</style>
