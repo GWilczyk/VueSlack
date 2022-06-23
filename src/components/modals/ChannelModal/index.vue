@@ -6,7 +6,7 @@
       <div class="modal-content">
         <!-- Header -->
         <div class="modal-header">
-          <h5 class="modal-title text-dark">Modal title</h5>
+          <h5 class="modal-title text-dark">Create A Channel</h5>
           <button
             aria-label="Close"
             class="btn-close"
@@ -62,16 +62,16 @@ import { child, getDatabase, push, ref, update } from 'firebase/database'
 import {
   CREATE_CHANNEL_FAILED,
   CREATE_CHANNEL_REQUEST,
+  CREATE_CHANNEL_RESET,
   CREATE_CHANNEL_SUCCESS,
-  HANDLE_CHANNEL
+  HANDLE_CHANNEL,
+  SHOW_CHANNEL_MODAL
 } from '@/store/mutation-types'
 
 export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Modal',
-  props: ['showModal', 'toggleModal'],
+  name: 'ChannelModal',
   computed: {
-    ...mapGetters(['hasErrors', 'isLoading']),
+    ...mapGetters(['hasErrors', 'isLoading', 'showModal']),
     ...mapState({
       channel: (state) => state.channel
     })
@@ -80,8 +80,10 @@ export default {
     ...mapActions([
       CREATE_CHANNEL_FAILED,
       CREATE_CHANNEL_REQUEST,
+      CREATE_CHANNEL_RESET,
       CREATE_CHANNEL_SUCCESS,
-      HANDLE_CHANNEL
+      HANDLE_CHANNEL,
+      SHOW_CHANNEL_MODAL
     ]),
 
     createChannel: async function () {
@@ -109,6 +111,12 @@ export default {
 
     handleChannel: function (event) {
       this.HANDLE_CHANNEL(event.target.value)
+    },
+
+    toggleModal: function () {
+      /* Resets modal input when closing */
+      this.showModal && this.CREATE_CHANNEL_RESET()
+      this.SHOW_CHANNEL_MODAL()
     }
   }
 }
@@ -126,6 +134,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 120;
 }
 .overlay {
   position: fixed;
@@ -134,5 +143,9 @@ export default {
   bottom: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.5);
+  z-index: 120;
+}
+.modal-content {
+  z-index: 140;
 }
 </style>

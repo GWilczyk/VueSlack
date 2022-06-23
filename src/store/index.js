@@ -7,9 +7,11 @@ import {
   CURRENT_CHANNEL_RESET,
   CURRENT_CHANNEL_SET,
   HANDLE_CHANNEL,
+  HANDLE_MESSAGE,
   PUSH_CHANNEL_TO_CHANNELS,
   SAVE_USER_TO_DB_REQUEST,
   SAVE_USER_TO_DB_SUCCESS,
+  SHOW_CHANNEL_MODAL,
   USER_LOGIN_FAILED,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
@@ -23,14 +25,17 @@ export default createStore({
     currentChannel: null,
     currentUser: null,
     errors: [],
-    loading: false
+    loading: false,
+    message: '',
+    showModal: false
   },
   getters: {
     getChannels: (state) => state.channels,
-    getCurrentChannel: (state) => state.currentChannel,
-    getCurrentUser: (state) => state.currentUser,
+    currentChannel: (state) => state.currentChannel,
+    currentUser: (state) => state.currentUser,
     hasErrors: (state) => state.errors.length > 0,
-    isLoading: (state) => state.loading
+    isLoading: (state) => state.loading,
+    showModal: (state) => state.showModal
   },
   mutations: {
     [CREATE_CHANNEL_FAILED](state, { error }) {
@@ -61,6 +66,9 @@ export default createStore({
     [HANDLE_CHANNEL](state, { value }) {
       state.channel = value
     },
+    [HANDLE_MESSAGE](state, { value }) {
+      state.message = value
+    },
     [PUSH_CHANNEL_TO_CHANNELS](state, { value }) {
       state.channels.push(value)
     },
@@ -71,6 +79,9 @@ export default createStore({
     [SAVE_USER_TO_DB_SUCCESS](state) {
       state.errors = []
       state.loading = false
+    },
+    [SHOW_CHANNEL_MODAL](state) {
+      state.showModal = !state.showModal
     },
     [USER_LOGIN_FAILED](state, { error }) {
       state.currentUser = null
@@ -114,11 +125,17 @@ export default createStore({
     [HANDLE_CHANNEL]({ commit }, value) {
       commit(HANDLE_CHANNEL, { value })
     },
+    [HANDLE_MESSAGE]({ commit }, value) {
+      commit(HANDLE_MESSAGE, { value })
+    },
     [PUSH_CHANNEL_TO_CHANNELS]({ commit }, value) {
       commit(PUSH_CHANNEL_TO_CHANNELS, { value })
     },
     [SAVE_USER_TO_DB_SUCCESS]({ commit }) {
       commit(SAVE_USER_TO_DB_SUCCESS)
+    },
+    [SHOW_CHANNEL_MODAL]({ commit }) {
+      commit(SHOW_CHANNEL_MODAL)
     },
     [USER_LOGIN_FAILED]({ commit }, error) {
       commit(USER_LOGIN_FAILED, { error })

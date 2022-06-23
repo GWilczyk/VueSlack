@@ -1,35 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import ChatView from '@/views/ChatView'
+import HomeView from '@/views/HomeView'
 import LoginView from '@/views/LoginView'
-
-import { authInstance } from '@/firebase'
 
 const routes = [
   {
     path: '/',
     name: 'chat',
-    component: ChatView,
-    beforeEnter: (to, from, next) => {
-      if (!authInstance.currentUser) {
-        next('/login')
-      } else {
-        next()
-      }
-    }
+    component: HomeView
   },
   {
     path: '/login',
     name: 'login',
-    component: LoginView,
-    beforeEnter: (to, from, next) => {
-      if (authInstance.currentUser) {
-        /* Reject the navigation */
-        return false
-      } else {
-        next()
-      }
-    }
+    component: LoginView
   }
 ]
 
