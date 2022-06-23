@@ -11,51 +11,38 @@
       @click="setActiveChannel(channel)"
       :key="channel.id"
       type="button"
-      v-for="channel in getChannels"
+      v-for="channel in channels"
     >
       {{ channel.channelName }}
     </button>
   </div>
-
-  <!-- Modal Dialog -->
-  <modal-dialog
-    :showModal="showModal"
-    :toggleModal="toggleModal"
-  ></modal-dialog>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
-import Modal from '@/components/Modal'
 import { getDatabase, off, onChildAdded, ref } from '@firebase/database'
 import {
   CREATE_CHANNEL_RESET,
   CURRENT_CHANNEL_RESET,
   CURRENT_CHANNEL_SET,
-  PUSH_CHANNEL_TO_CHANNELS
+  PUSH_CHANNEL_TO_CHANNELS,
+  SHOW_CHANNEL_MODAL
 } from '@/store/mutation-types'
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Channels',
-  data() {
-    return {
-      showModal: false
-    }
-  },
-  components: {
-    'modal-dialog': Modal
-  },
   computed: {
-    ...mapGetters(['getChannels', 'getCurrentChannel'])
+    ...mapState(['channels', 'currentChannel', 'showModal'])
   },
   methods: {
     ...mapActions([
       CREATE_CHANNEL_RESET,
       CURRENT_CHANNEL_RESET,
       CURRENT_CHANNEL_SET,
-      PUSH_CHANNEL_TO_CHANNELS
+      PUSH_CHANNEL_TO_CHANNELS,
+      SHOW_CHANNEL_MODAL
     ]),
 
     addChannelsListener: function () {
@@ -69,7 +56,7 @@ export default {
     },
 
     isChannelActive: function (channel) {
-      return channel.id === this.getCurrentChannel.id
+      return channel.id === this.currentChannel.id
     },
 
     removeChannelsListener: function () {
@@ -86,7 +73,7 @@ export default {
     toggleModal: function () {
       /* Resets modal input when closing */
       this.showModal && this.CREATE_CHANNEL_RESET()
-      this.showModal = !this.showModal
+      this.SHOW_CHANNEL_MODAL()
     }
   },
   mounted() {

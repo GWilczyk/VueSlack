@@ -9,10 +9,10 @@
         alt="User picture"
         class="rounded-circle"
         height="30"
-        :src="getCurrentUser?.photoURL"
+        :src="currentUser?.photoURL"
         referrerpolicy="origin"
       />
-      <span class="text-light">{{ getCurrentUser?.displayName }}</span>
+      <span class="text-light">{{ currentUser?.displayName }}</span>
     </div>
 
     <hr />
@@ -40,7 +40,7 @@ export default {
     channels: Channels
   },
   computed: {
-    ...mapGetters(['getCurrentUser'])
+    ...mapGetters(['currentUser'])
   },
   methods: {
     handleLogout: function () {
