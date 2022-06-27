@@ -1,24 +1,40 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
-import HomeView from '@/views/HomeView'
-import LoginView from '@/views/LoginView'
+import { useAuthStore } from '@/stores/authStore'
+
+import HomeView from '@/views/HomeView.vue'
+import AuthView from '@/views/AuthView.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'chat',
+    name: 'home',
     component: HomeView
   },
   {
-    path: '/login',
-    name: 'login',
-    component: LoginView
+    path: '/auth',
+    name: 'auth',
+    component: AuthView
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(),
   routes
+})
+
+/* navigation guard */
+router.beforeEach(async (to) => {
+  const authStore = useAuthStore()
+  if (authStore.user.id && to.name === 'auth') {
+    return false
+  }
+
+  if (!authStore.user.id && to.name !== 'auth') {
+    return {
+      name: 'auth'
+    }
+  }
 })
 
 export default router

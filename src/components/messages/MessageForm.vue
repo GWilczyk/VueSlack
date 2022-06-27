@@ -8,8 +8,7 @@
           name="message"
           placeholder="Write your text…"
           type="text"
-          :value="message"
-          @change="handleMessage"
+          v-model.trim="messageStore.message"
         />
 
         <div class="input-group-append">
@@ -30,6 +29,31 @@
   </div>
 </template>
 
+<script setup>
+/* imports */
+import { useAuthStore } from '@/stores/authStore'
+import { useChannelStore } from '@/stores/channelStore'
+import { useMessageStore } from '@/stores/messageStore'
+/* store */
+const authStore = useAuthStore()
+const channelStore = useChannelStore()
+const messageStore = useMessageStore()
+/* send message */
+const sendMessage = () => {
+  const author = authStore.user
+
+  if (channelStore.activeChannel !== null && messageStore.message.length > 0) {
+    messageStore.sendMessage({
+      author,
+      activeChannel: channelStore.activeChannel
+    })
+
+    messageStore.message = ''
+  }
+}
+</script>
+
+<!--
 <script>
 import { getCurrentInstance } from 'vue'
 
@@ -96,6 +120,7 @@ export default {
   }
 }
 </script>
+-->
 
 <style scoped>
 .message-form {

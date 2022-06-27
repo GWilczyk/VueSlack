@@ -1,7 +1,16 @@
+<script setup>
+/* imports */
+import { onMounted } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useChannelStore } from '@/stores/channelStore'
+/* manage user authentication */
+const authStore = useAuthStore()
+onMounted(() => authStore.init())
+/* Retrieve channels */
+const channelStore = useChannelStore()
+onMounted(() => channelStore.init())
+</script>
+
 <template>
-  <!-- <nav>
-    <router-link to="/">Chat</router-link> |
-    <router-link to="/login">Login</router-link>
-  </nav> -->
-  <router-view></router-view>
+  <RouterView />
 </template>
