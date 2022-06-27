@@ -1,27 +1,21 @@
-import { createApp } from 'vue'
+import { createApp, markRaw } from 'vue'
+import { createPinia } from 'pinia'
+
 import App from '@/App.vue'
-
 import router from '@/router'
-
-import store from '@/store'
-import { USER_LOGIN_SUCCESS } from '@/store/mutation-types'
-
-import { authInstance } from '@/firebase'
-import { onAuthStateChanged } from 'firebase/auth'
 
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
+import { auth } from '@/js/firebase'
+
+const pinia = createPinia()
+pinia.use(({ store }) => (store.router = markRaw(router)))
+
 let app
 
-const unsubscribe = onAuthStateChanged(authInstance, (user) => {
+auth.onAuthStateChanged(() => {
   if (!app) {
-    app = createApp(App).use(store).use(router).mount('#app')
+    app = createApp(App).use(pinia).use(router).mount('#app')
   }
-
-  if (user) {
-    store.dispatch(USER_LOGIN_SUCCESS, user)
-  }
-
-  unsubscribe()
 })

@@ -1,23 +1,28 @@
+/* eslint-disable no-undef */
 <template>
-  <div class="modal-container" v-if="showModal">
-    <div class="overlay" @click="toggleModal"></div>
+  <div class="modal-container" v-if="props.modelValue">
+    <div class="overlay"></div>
 
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div
+      class="modal-dialog modal-dialog-centered"
+      role="document"
+      ref="modalRef"
+    >
       <div class="modal-content">
         <!-- Header -->
         <div class="modal-header">
-          <h5 class="modal-title text-dark">Modal title</h5>
+          <h5 class="modal-title text-dark">Create A Channel</h5>
           <button
             aria-label="Close"
             class="btn-close"
-            @click="toggleModal"
+            @click="closeModal"
             data-dismiss="modal"
             type="button"
           ></button>
         </div>
         <!-- Body -->
         <div class="modal-body">
-          <form>
+          <form @submit.prevent="handleSubmit">
             <div class="form-group">
               <input
                 class="form-control"
@@ -25,16 +30,16 @@
                 name="new_channel"
                 placeholder="Channel name…"
                 type="text"
-                :value="channel"
-                @change="handleChannel"
+                v-model="channelStore.newChannel"
+                v-autofocus
               />
             </div>
             <!-- Errors status -->
-            <ul class="list-group" v-if="this.hasErrors">
+            <ul class="list-group" v-if="channelStore.errors.length">
               <li
                 class="list-group-item text-danger"
                 :key="index"
-                v-for="(error, index) in this.$store.state.errors"
+                v-for="(error, index) in channelStore.errors"
               >
                 {{ error.message }}
               </li>
@@ -43,10 +48,10 @@
         </div>
         <!-- Footer -->
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" @click="toggleModal">
+          <button class="btn btn-secondary" type="button" @click="closeModal">
             Cancel
           </button>
-          <button class="btn btn-primary" type="button" @click="createChannel">
+          <button class="btn btn-primary" type="button" @click="handleSubmit">
             Add Channel
           </button>
         </div>
@@ -55,35 +60,47 @@
   </div>
 </template>
 
+<script setup>
+/* imports */
+import { ref } from 'vue'
+import { onClickOutside } from '@vueuse/core'
+import { vAutofocus } from '@/directives/vAutofocus'
+
+import { useChannelStore } from '@/stores/channelStore'
+/* store */
+const channelStore = useChannelStore()
+/* props */
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    default: false
+  }
+})
+/* emits */
+const emit = defineEmits(['update:modelValue'])
+/* close modal */
+const closeModal = () => {
+  channelStore.newChannel = ''
+  emit('update:modelValue', false)
+}
+/* click outside to close modal */
+const modalRef = ref(null)
+onClickOutside(modalRef, closeModal)
+/* add new channel */
+const handleSubmit = () => {
+  channelStore.createChannel()
+  channelStore.newChannel = ''
+  closeModal()
+}
+</script>
+
+<!--
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
 import { child, getDatabase, push, ref, update } from 'firebase/database'
 
-import {
-  CREATE_CHANNEL_FAILED,
-  CREATE_CHANNEL_REQUEST,
-  CREATE_CHANNEL_SUCCESS,
-  HANDLE_CHANNEL
-} from '@/store/mutation-types'
-
 export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Modal',
-  props: ['showModal', 'toggleModal'],
-  computed: {
-    ...mapGetters(['hasErrors', 'isLoading']),
-    ...mapState({
-      channel: (state) => state.channel
-    })
-  },
   methods: {
-    ...mapActions([
-      CREATE_CHANNEL_FAILED,
-      CREATE_CHANNEL_REQUEST,
-      CREATE_CHANNEL_SUCCESS,
-      HANDLE_CHANNEL
-    ]),
-
+   
     createChannel: async function () {
       try {
         this.CREATE_CHANNEL_REQUEST()
@@ -101,7 +118,7 @@ export default {
         await update(ref(db), updates)
 
         await this.CREATE_CHANNEL_SUCCESS()
-        this.toggleModal()
+        this.closeModal()
       } catch (error) {
         this.CREATE_CHANNEL_FAILED(error)
       }
@@ -109,10 +126,11 @@ export default {
 
     handleChannel: function (event) {
       this.HANDLE_CHANNEL(event.target.value)
-    }
+    },   
   }
 }
 </script>
+-->
 
 <style scoped>
 .modal-container {
@@ -126,6 +144,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 120;
 }
 .overlay {
   position: fixed;
@@ -134,5 +153,9 @@ export default {
   bottom: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.5);
+  z-index: 120;
+}
+.modal-content {
+  z-index: 140;
 }
 </style>
