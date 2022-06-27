@@ -1,26 +1,15 @@
 module.exports = {
   root: true,
   env: {
+    es2021: true,
     node: true
   },
-  extends: [
-    'plugin:vue/vue3-essential',
-    'eslint:recommended',
-    'plugin:prettier/recommended'
-  ],
+  extends: ['eslint:recommended', 'plugin:vue/vue3-essential', 'prettier'],
+  parser: 'vue-eslint-parser',
   parserOptions: {
-    parser: '@babel/eslint-parser'
+    sourceType: 'module'
   },
   rules: {
-    'prettier/prettier': [
-      'warn',
-      {
-        singleQuote: true,
-        semi: false,
-        trailingComma: 'none'
-      }
-    ],
-    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
+    'vue/require-default-prop': 'off'
   }
 }

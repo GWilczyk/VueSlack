@@ -1,34 +1,23 @@
 <template>
-  <div>
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-4 sidebar">
-          <sidebar></sidebar>
-        </div>
-
-        <div class="col-md-8 messages">
-          <messages></messages>
-        </div>
-
-        <channel-modal></channel-modal>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-4 sidebar">
+        <LeftSidebar />
       </div>
+
+      <div class="col-md-8 messages">
+        <MessageList />
+      </div>
+
+      <ChannelModal />
     </div>
   </div>
 </template>
 
-<script>
-import ChannelModal from '@/components/modals/ChannelModal'
-import Messages from '@/components/messages/Messages'
-import Sidebar from '@/components/sidebar/Sidebar'
-
-export default {
-  name: 'HomeView',
-  components: {
-    'channel-modal': ChannelModal,
-    messages: Messages,
-    sidebar: Sidebar
-  }
-}
+<script setup>
+import ChannelModal from '@/components/modals/ChannelModal.vue'
+import MessageList from '@/components/messages/MessageList.vue'
+import LeftSidebar from '@/components/sidebar/LeftSidebar.vue'
 </script>
 
 <style scoped>

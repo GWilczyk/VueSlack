@@ -4,10 +4,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'SingleMessage'
-}
-</script>
+<script setup></script>
 
 <style scoped></style>
