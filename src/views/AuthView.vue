@@ -13,12 +13,8 @@
     </div>
 
     <!-- Loading status -->
-    <div class="text-center my-5">
-      <div
-        class="spinner-border text-primary"
-        role="status"
-        v-if="authStore.isLoading"
-      ></div>
+    <div class="text-center my-5" v-if="authStore.isLoading">
+      <LoadingSpinner />
     </div>
 
     <div class="container-fluid">
@@ -50,8 +46,9 @@
 </template>
 
 <script setup>
+/* imports */
 import { useAuthStore } from '@/stores/authStore'
-
+import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 /* store */
 const authStore = useAuthStore()
 </script>

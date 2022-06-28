@@ -9,6 +9,7 @@ import {
 } from 'firebase/auth'
 
 import { auth } from '@/js/firebase'
+import { useChannelStore } from '@/stores/channelStore'
 
 export const useAuthStore = defineStore('authStore', {
   state: () => ({
@@ -18,6 +19,8 @@ export const useAuthStore = defineStore('authStore', {
   }),
   actions: {
     init() {
+      const channelStore = useChannelStore()
+
       onAuthStateChanged(auth, (user) => {
         if (user) {
           this.user = {
@@ -25,6 +28,9 @@ export const useAuthStore = defineStore('authStore', {
             displayName: user.displayName,
             id: user.uid
           }
+
+          /* Retrieve channels */
+          channelStore.init()
 
           this.router.push('/')
         } else {
