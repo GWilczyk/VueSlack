@@ -88,49 +88,13 @@ const modalRef = ref(null)
 onClickOutside(modalRef, closeModal)
 /* add new channel */
 const handleSubmit = () => {
-  channelStore.createChannel()
+  if (channelStore.newChannel.trim().length > 0) {
+    channelStore.createChannel()
+  }
   channelStore.newChannel = ''
   closeModal()
 }
 </script>
-
-<!--
-<script>
-import { child, getDatabase, push, ref, update } from 'firebase/database'
-
-export default {
-  methods: {
-   
-    createChannel: async function () {
-      try {
-        this.CREATE_CHANNEL_REQUEST()
-
-        const db = getDatabase()
-
-        const newChannelKey = push(child(ref(db), 'channels')).key
-
-        const updates = {}
-        updates['/channels/' + newChannelKey] = {
-          id: newChannelKey,
-          channelName: this.channel
-        }
-
-        await update(ref(db), updates)
-
-        await this.CREATE_CHANNEL_SUCCESS()
-        this.closeModal()
-      } catch (error) {
-        this.CREATE_CHANNEL_FAILED(error)
-      }
-    },
-
-    handleChannel: function (event) {
-      this.HANDLE_CHANNEL(event.target.value)
-    },   
-  }
-}
-</script>
--->
 
 <style scoped>
 .modal-container {

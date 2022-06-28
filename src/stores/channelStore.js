@@ -8,9 +8,10 @@ import {
 } from 'firebase/firestore'
 
 import { db } from '@/js/firebase'
+import { useMessageStore } from '@/stores/messageStore'
 
 let channelsCollectionRef, channelsCollectionQuery
-let unsubscribeSnapshots = null
+let unsubscribeChannelsSnapshots = null
 
 export const useChannelStore = defineStore('channelStore', {
   state: () => ({
@@ -25,9 +26,9 @@ export const useChannelStore = defineStore('channelStore', {
       this.channels = []
       this.newChannel = ''
 
-      /* unsubscribe from any active listener when logging out */
-      if (unsubscribeSnapshots) {
-        unsubscribeSnapshots()
+      /* unsubscribe from channels listener when logging out */
+      if (unsubscribeChannelsSnapshots) {
+        unsubscribeChannelsSnapshots()
       }
     },
     async createChannel() {
@@ -38,9 +39,11 @@ export const useChannelStore = defineStore('channelStore', {
       })
     },
     getChannels() {
+      const messageStore = useMessageStore()
+
       this.channelsLoaded = false
 
-      unsubscribeSnapshots = onSnapshot(
+      unsubscribeChannelsSnapshots = onSnapshot(
         channelsCollectionQuery,
         (querySnapshot) => {
           let channels = []
@@ -54,7 +57,12 @@ export const useChannelStore = defineStore('channelStore', {
           })
 
           this.channels = channels
-          this.channels.length && (this.activeChannel = this.channels[0].id)
+          if (this.channels.length) {
+            /* initialize active channel */
+            this.activeChannel = this.channels[0].id
+            /* initialize message store */
+            this.channels.length && messageStore.init(this.activeChannel)
+          }
 
           this.channelsLoaded = true
         },
@@ -68,6 +76,18 @@ export const useChannelStore = defineStore('channelStore', {
       channelsCollectionQuery = query(channelsCollectionRef, orderBy('date'))
 
       this.getChannels()
+    }
+  },
+  getters: {
+    isChannelActive: (state) => (channelId) =>
+      channelId === state.activeChannel,
+    changeChannel: (state) => (channelId) => {
+      const messageStore = useMessageStore()
+      messageStore.clearMessages()
+
+      state.activeChannel = channelId
+
+      messageStore.init(channelId)
     }
   }
 })

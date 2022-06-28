@@ -1,6 +1,6 @@
 <template>
   <div class="message-form">
-    <form>
+    <form @submit.prevent="sendMessage">
       <div class="input-group">
         <input
           class="form-control my-3"
@@ -41,86 +41,21 @@ const messageStore = useMessageStore()
 /* send message */
 const sendMessage = () => {
   const author = authStore.user
+  const activeChannel = channelStore.activeChannel
 
-  if (channelStore.activeChannel !== null && messageStore.message.length > 0) {
+  if (
+    channelStore.activeChannel !== null &&
+    messageStore.message.trim().length > 0
+  ) {
     messageStore.sendMessage({
       author,
-      activeChannel: channelStore.activeChannel
+      activeChannel
     })
-
+    /* reset message input */
     messageStore.message = ''
   }
 }
 </script>
-
-<!--
-<script>
-import { getCurrentInstance } from 'vue'
-
-import { mapActions, mapGetters } from 'vuex'
-import { HANDLE_MESSAGE } from '@/store/mutation-types'
-import { push, serverTimestamp, set } from '@firebase/database'
-
-export default {
-  name: 'MessageForm',
-  computed: {
-    // ...mapState(['message']),
-    ...mapGetters(['currentChannel', 'currentUser'])
-  },
-  setup() {
-    const instance = getCurrentInstance()
-    const { messagesRef } = instance.parent.data
-
-    const sendMessage = () => {
-      const newMessage = {
-        content: this.message,
-        timestamp: serverTimestamp(),
-        user: {
-          avatar: this.currentUser.photoURL,
-          name: this.currentUser.displayName,
-          id: this.currentUser.uid
-        }
-      }
-      if (this.currentChannel !== null && this.message.length > 0) {
-        const newMessageRef = push(messagesRef)
-        set(newMessageRef, newMessage)
-      }
-    }
-
-    return sendMessage
-  },
-  // computed: {
-  //   ...mapState(['message']),
-  //   ...mapGetters(['currentChannel', 'currentUser'])
-  // },
-  methods: {
-    ...mapActions([HANDLE_MESSAGE]),
-    handleMessage: function (event) {
-      this.HANDLE_MESSAGE(event.target.value)
-    }
-    // sendMessage: function () {
-    //   const newMessage = {
-    //     content: this.message,
-    //     timestamp: serverTimestamp(),
-    //     user: {
-    //       avatar: this.currentUser.photoURL,
-    //       name: this.currentUser.displayName,
-    //       id: this.currentUser.uid
-    //     }
-    //   }
-    //   console.log('🚀 ~ file: index.vue ~ line 75 ~ newMessage', newMessage)
-    //   const instance = getCurrentInstance()
-    //   const { messagesRef } = instance.parent.data
-
-    //   if (this.currentChannel !== null && this.message.length > 0) {
-    //     const newMessageRef = push(messagesRef)
-    //     set(newMessageRef, newMessage)
-    //   }
-    // }
-  }
-}
-</script>
--->
 
 <style scoped>
 .message-form {
