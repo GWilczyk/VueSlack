@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
-const firebaseConfig = {
+const firestoreConfig = {
   apiKey: 'AIzaSyDMYhFM5yODPij3oQWBJ517ODIZhRfQA6I',
   authDomain: 'vuexslack-77956.firebaseapp.com',
   projectId: 'vuexslack-77956',
@@ -11,7 +11,7 @@ const firebaseConfig = {
   appId: '1:11597921230:web:c4b647b42083c75683099f'
 }
 
-const app = initializeApp(firebaseConfig)
+const app = initializeApp(firestoreConfig)
 const db = getFirestore(app)
 const auth = getAuth(app)
 

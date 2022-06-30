@@ -13,7 +13,7 @@
     </div>
 
     <!-- Loading status -->
-    <div class="text-center my-5" v-if="authStore.isLoading">
+    <div class="text-center my-5" v-if="!authStore.userLoaded">
       <LoadingSpinner />
     </div>
 
@@ -23,7 +23,7 @@
         <div class="row mt-5">
           <button
             class="btn btn-outline-danger btn-lg col-3 mx-auto"
-            @click="authStore.loginWithGoogle"
+            @click="handleGoogleLogin"
           >
             Login with Google
           </button>
@@ -35,7 +35,7 @@
         <div class="row mt-5">
           <button
             class="btn btn-outline-info btn-lg col-3 mx-auto"
-            @click="authStore.loginWithFacebook"
+            @click="handleFacebookLogin"
           >
             Login with Facebook
           </button>
@@ -51,11 +51,18 @@ import { useAuthStore } from '@/stores/authStore'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 /* store */
 const authStore = useAuthStore()
+/* handle login */
+const handleFacebookLogin = () => authStore.loginWithFacebook()
+const handleGoogleLogin = () => authStore.loginWithGoogle()
 </script>
 
 <style scoped>
 .btn,
 .jumbotron {
   border-radius: 0;
+}
+.btn {
+  min-width: 256px;
+  white-space: nowrap;
 }
 </style>

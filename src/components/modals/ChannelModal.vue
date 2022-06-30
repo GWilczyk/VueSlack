@@ -91,7 +91,6 @@ const handleSubmit = () => {
   if (channelStore.newChannel.trim().length > 0) {
     channelStore.createChannel()
   }
-  channelStore.newChannel = ''
   closeModal()
 }
 </script>
