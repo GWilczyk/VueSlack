@@ -12,7 +12,7 @@
         :src="authStore.user.avatar"
         referrerpolicy="origin"
       />
-      <span class="text-light">{{ authStore.user.displayName }}</span>
+      <span class="text-light">{{ authStore.user.name }}</span>
     </div>
 
     <hr />
@@ -24,13 +24,19 @@
     <hr />
 
     <ChannelPart />
+
+    <hr style="border: 1px solid #333" />
+
+    <UserPart />
   </div>
 </template>
 
 <script setup>
 /* imports */
 import { useAuthStore } from '@/stores/authStore'
+
 import ChannelPart from '@/components/sidebar/ChannelPart.vue'
+import UserPart from '@/components/sidebar/UserPart.vue'
 /* store */
 const authStore = useAuthStore()
 </script>

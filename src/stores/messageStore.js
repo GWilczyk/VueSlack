@@ -18,19 +18,20 @@ let unsubscribeMessagesSnapshots = null
 
 export const useMessageStore = defineStore('messageStore', {
   state: () => ({
+    errors: [],
     message: '',
     messages: [],
-    messagesLoaded: false,
-    errors: []
+    messagesLoaded: false
   }),
   actions: {
     clearMessages() {
-      this.messages = []
-      this.message = ''
-
+      /* unsubscribe from messages listener when logging out */
       if (unsubscribeMessagesSnapshots) {
         unsubscribeMessagesSnapshots()
       }
+      this.messages = []
+      this.message = ''
+      this.messagesLoaded = false
     },
     async getMessages() {
       this.messagesLoaded = false
@@ -49,14 +50,15 @@ export const useMessageStore = defineStore('messageStore', {
           })
 
           this.messages = messages
-
           this.messagesLoaded = true
         },
         (error) => {
-          console.error('error.message: ', error.message)
+          console.log('Error: ', error.message)
+          this.errors.push(error)
         }
       )
     },
+
     init(activeChannel) {
       messagesCollectionRef = collection(
         db,
@@ -68,8 +70,10 @@ export const useMessageStore = defineStore('messageStore', {
         messagesCollectionRef,
         orderBy('timestamp')
       )
+
       this.getMessages()
     },
+
     async sendMessage({ author, activeChannel }) {
       try {
         const newMessage = {
