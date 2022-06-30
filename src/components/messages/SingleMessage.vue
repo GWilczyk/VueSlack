@@ -8,7 +8,7 @@
     />
     <div class="media-body">
       <h6 class="mt-0">
-        <a href="#">{{ props.message.author.displayName }}</a> -
+        <a href="#">{{ props.message.author.name }}</a> -
         {{ fromNow }}
       </h6>
       <p :class="{ 'self-message': selfMessage }">
@@ -34,7 +34,7 @@ const props = defineProps({
 const authStore = useAuthStore()
 /* format date */
 const fromNow = computed(() =>
-  moment(props.message.timestamp.seconds * 1000).fromNow()
+  moment(props.message.timestamp?.seconds * 1000).fromNow()
 )
 /* check if message has been written by the current user */
 const selfMessage = computed(

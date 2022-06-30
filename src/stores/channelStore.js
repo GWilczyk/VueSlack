@@ -18,26 +18,35 @@ export const useChannelStore = defineStore('channelStore', {
     activeChannel: 0,
     channels: [],
     channelsLoaded: false,
-    newChannel: '',
-    errors: []
+    errors: [],
+    newChannel: ''
   }),
   actions: {
     clearChannels() {
-      this.channels = []
-      this.newChannel = ''
-
       /* unsubscribe from channels listener when logging out */
       if (unsubscribeChannelsSnapshots) {
         unsubscribeChannelsSnapshots()
       }
+
+      this.channels = []
+      this.newChannel = ''
+      this.channelsLoaded = false
+      this.activeChannel = 0
     },
+
     async createChannel() {
-      const date = new Date().getTime().toString()
-      await addDoc(channelsCollectionRef, {
-        content: this.newChannel,
-        date
-      })
+      try {
+        const date = new Date().getTime().toString()
+        await addDoc(channelsCollectionRef, {
+          content: this.newChannel,
+          date
+        })
+      } catch (error) {
+        console.error('Error: ', error.message)
+        this.errors.push(error)
+      }
     },
+
     getChannels() {
       const messageStore = useMessageStore()
 
@@ -67,10 +76,12 @@ export const useChannelStore = defineStore('channelStore', {
           this.channelsLoaded = true
         },
         (error) => {
-          console.error(error)
+          console.error('Error: ', error.message)
+          this.errors.push(error)
         }
       )
     },
+
     init() {
       channelsCollectionRef = collection(db, 'channels')
       channelsCollectionQuery = query(channelsCollectionRef, orderBy('date'))
