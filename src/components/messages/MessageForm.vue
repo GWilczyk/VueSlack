@@ -31,6 +31,7 @@
 
 <script setup>
 /* imports */
+
 import { useAuthStore } from '@/stores/authStore'
 import { useChannelStore } from '@/stores/channelStore'
 import { useMessageStore } from '@/stores/messageStore'
@@ -51,6 +52,7 @@ const sendMessage = () => {
       author,
       activeChannel
     })
+
     /* reset message input */
     messageStore.message = ''
   }

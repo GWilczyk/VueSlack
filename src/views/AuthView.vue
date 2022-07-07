@@ -12,11 +12,6 @@
       </div>
     </div>
 
-    <!-- Loading status -->
-    <div class="text-center my-5" v-if="!authStore.userLoaded">
-      <LoadingSpinner />
-    </div>
-
     <div class="container-fluid">
       <!-- Login with Google -->
       <div class="col text-center">
@@ -41,6 +36,11 @@
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- Loading status -->
+    <div class="text-center my-5" v-if="!authStore.userLoaded">
+      <LoadingSpinner />
     </div>
   </div>
 </template>

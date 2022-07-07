@@ -11,7 +11,8 @@ import {
   setDoc
 } from 'firebase/firestore'
 
-import { db } from '@/js/firebase'
+import { firestoredb } from '@/js/firebase'
+import { nextTick } from 'vue'
 
 let messagesCollectionRef, messagesCollectionQuery
 let unsubscribeMessagesSnapshots = null
@@ -33,12 +34,12 @@ export const useMessageStore = defineStore('messageStore', {
       this.message = ''
       this.messagesLoaded = false
     },
-    async getMessages() {
+    getMessages() {
       this.messagesLoaded = false
 
       unsubscribeMessagesSnapshots = onSnapshot(
         messagesCollectionQuery,
-        (querySnapshot) => {
+        async (querySnapshot) => {
           let messages = []
 
           querySnapshot.forEach((msg) => {
@@ -51,6 +52,12 @@ export const useMessageStore = defineStore('messageStore', {
 
           this.messages = messages
           this.messagesLoaded = true
+
+          /* to scroll to the last message when loading the page */
+          await nextTick(() => {
+            // eslint-disable-next-line no-undef
+            $('html, body').scrollTop($(document).height())
+          })
         },
         (error) => {
           console.log('Error: ', error.message)
@@ -61,7 +68,7 @@ export const useMessageStore = defineStore('messageStore', {
 
     init(activeChannel) {
       messagesCollectionRef = collection(
-        db,
+        firestoredb,
         'messages',
         activeChannel,
         'messagesInChannel'
@@ -70,7 +77,6 @@ export const useMessageStore = defineStore('messageStore', {
         messagesCollectionRef,
         orderBy('timestamp')
       )
-
       this.getMessages()
     },
 
@@ -81,19 +87,27 @@ export const useMessageStore = defineStore('messageStore', {
           content: this.message,
           timestamp: serverTimestamp()
         }
-
         /* check if 'activeChannel' document exists */
-        const docRef = doc(db, 'messages', activeChannel)
+        const docRef = doc(firestoredb, 'messages', activeChannel)
         const docSnap = await getDoc(docRef)
-
         if (!docSnap.exists()) {
           await setDoc(docRef, {})
         }
-
         await addDoc(
-          collection(db, 'messages', activeChannel, 'messagesInChannel'),
+          collection(
+            firestoredb,
+            'messages',
+            activeChannel,
+            'messagesInChannel'
+          ),
           newMessage
         )
+
+        /* scroll down to show this last new message */
+        await nextTick(() => {
+          // eslint-disable-next-line no-undef
+          $('html, body').scrollTop($(document).height())
+        })
       } catch (error) {
         this.errors.push(error)
       }
