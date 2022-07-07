@@ -1,17 +1,18 @@
 <template>
-  <h1>Message Container</h1>
   <div>
-    <!-- Loading spinner -->
-    <div v-if="!messageStore.messagesLoaded">
-      <LoadingSpinner />
-    </div>
+    <div class="mt-3 mb-5">
+      <!-- Loading spinner -->
+      <div v-if="!messageStore.messagesLoaded">
+        <LoadingSpinner />
+      </div>
 
-    <SingleMessage
-      :key="message.id"
-      :message="message"
-      v-for="message in messageStore.messages"
-      v-else
-    />
+      <SingleMessage
+        :key="message.id"
+        :message="message"
+        v-for="message in messageStore.messages"
+        v-else
+      />
+    </div>
 
     <MessageForm />
   </div>

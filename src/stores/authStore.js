@@ -26,16 +26,22 @@ export const useAuthStore = defineStore('authStore', {
 
       onAuthStateChanged(auth, (user) => {
         if (user) {
+          /* attach users listener */
+          userStore.init()
+
           this.user = {
             avatar: user.photoURL,
             name: user.displayName,
-            id: user.uid
+            id: user.uid,
+            status: 'offline'
           }
-          /* add user to 'users' Firestore database */
-          userStore.init()
+
+          /* add the user to 'users' collection in firebasedb */
           userStore.addUser(this.user)
+
           /* retrieve channels */
           channelStore.init()
+
           /* route to home view */
           this.router.push('/')
         } else {
@@ -66,11 +72,6 @@ export const useAuthStore = defineStore('authStore', {
 
         const provider = new GoogleAuthProvider()
         await signInWithPopup(auth, provider)
-
-        // const { user } = await signInWithPopup(auth, provider)
-        // const { displayName, photoURL, uid } = user
-
-        // this.addUser({ avatar: photoURL, id: uid, name: displayName })
       } catch (error) {
         console.error(error)
         this.errors.push(error)
@@ -87,7 +88,7 @@ export const useAuthStore = defineStore('authStore', {
 
         messageStore.clearMessages()
         channelStore.clearChannels()
-        userStore.removeUser(this.user.id.toString())
+        userStore.removeUser()
         userStore.clearUsers()
 
         await signOut(auth)
