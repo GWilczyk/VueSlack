@@ -25,7 +25,7 @@
 
     <ChannelPart />
 
-    <hr style="border: 1px solid #333" />
+    <hr />
 
     <UserPart />
   </div>

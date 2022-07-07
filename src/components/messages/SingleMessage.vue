@@ -1,5 +1,5 @@
 <template>
-  <div class="media mt-3">
+  <div class="media">
     <img
       alt="user"
       class="align-self-start"

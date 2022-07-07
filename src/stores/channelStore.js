@@ -7,7 +7,7 @@ import {
   query
 } from 'firebase/firestore'
 
-import { db } from '@/js/firebase'
+import { firestoredb } from '@/js/firebase'
 import { useMessageStore } from '@/stores/messageStore'
 
 let channelsCollectionRef, channelsCollectionQuery
@@ -83,9 +83,8 @@ export const useChannelStore = defineStore('channelStore', {
     },
 
     init() {
-      channelsCollectionRef = collection(db, 'channels')
+      channelsCollectionRef = collection(firestoredb, 'channels')
       channelsCollectionQuery = query(channelsCollectionRef, orderBy('date'))
-
       this.getChannels()
     }
   },
