@@ -6,10 +6,6 @@ import { useAuthStore } from '@/stores/authStore'
 const authStore = useAuthStore()
 
 onMounted(() => authStore.init())
-// onMounted(() => {
-//   userStore.init()
-//   authStore.init()
-// })
 </script>
 
 <template>
