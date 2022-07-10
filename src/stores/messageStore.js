@@ -2,19 +2,19 @@ import { defineStore } from 'pinia'
 import {
   addDoc,
   collection,
-  doc,
-  getDoc,
   onSnapshot,
   orderBy,
   query,
-  serverTimestamp,
-  setDoc
+  serverTimestamp
 } from 'firebase/firestore'
 
 import { firestoredb } from '@/js/firebase'
 import { nextTick } from 'vue'
 
+import { useChannelStore } from '@/stores/channelStore'
+
 let messagesCollectionRef, messagesCollectionQuery
+
 let unsubscribeMessagesSnapshots = null
 
 export const useMessageStore = defineStore('messageStore', {
@@ -26,14 +26,15 @@ export const useMessageStore = defineStore('messageStore', {
   }),
   actions: {
     clearMessages() {
-      /* unsubscribe from messages listener when logging out */
-      if (unsubscribeMessagesSnapshots) {
-        unsubscribeMessagesSnapshots()
-      }
+      /* unsubscribe from messages listener when logging out or
+      changing channel */
+      unsubscribeMessagesSnapshots && unsubscribeMessagesSnapshots()
+
       this.messages = []
       this.message = ''
       this.messagesLoaded = false
     },
+
     getMessages() {
       this.messagesLoaded = false
 
@@ -42,15 +43,17 @@ export const useMessageStore = defineStore('messageStore', {
         async (querySnapshot) => {
           let messages = []
 
-          querySnapshot.forEach((msg) => {
+          querySnapshot.forEach((queryDocumentSnapshot) => {
             const message = {
-              id: msg.id,
-              ...msg.data()
+              id: queryDocumentSnapshot.id,
+              ...queryDocumentSnapshot.data()
             }
+
             messages.push(message)
           })
 
           this.messages = messages
+
           this.messagesLoaded = true
 
           /* to scroll to the last message when loading the page */
@@ -67,41 +70,33 @@ export const useMessageStore = defineStore('messageStore', {
     },
 
     init(activeChannel) {
-      messagesCollectionRef = collection(
-        firestoredb,
-        'messages',
-        activeChannel,
-        'messagesInChannel'
-      )
+      const channelStore = useChannelStore()
+
+      messagesCollectionRef = channelStore.isPrivate
+        ? collection(firestoredb, `privateMessages/${activeChannel}`)
+        : collection(
+            firestoredb,
+            'messages',
+            activeChannel,
+            'messagesInChannel'
+          )
+
       messagesCollectionQuery = query(
         messagesCollectionRef,
         orderBy('timestamp')
       )
+
       this.getMessages()
     },
 
-    async sendMessage({ author, activeChannel }) {
+    async sendMessage({ author }) {
       try {
         const newMessage = {
           author,
           content: this.message,
           timestamp: serverTimestamp()
         }
-        /* check if 'activeChannel' document exists */
-        const docRef = doc(firestoredb, 'messages', activeChannel)
-        const docSnap = await getDoc(docRef)
-        if (!docSnap.exists()) {
-          await setDoc(docRef, {})
-        }
-        await addDoc(
-          collection(
-            firestoredb,
-            'messages',
-            activeChannel,
-            'messagesInChannel'
-          ),
-          newMessage
-        )
+        await addDoc(messagesCollectionRef, newMessage)
 
         /* scroll down to show this last new message */
         await nextTick(() => {

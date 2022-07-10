@@ -13,7 +13,7 @@
     <button
       class="list-group-item list-group-item-action"
       :class="{ active: channelStore.isChannelActive(channel.id) }"
-      @click="channelStore.changeChannel(channel.id)"
+      @click="handleClick(channel)"
       :key="channel.id"
       type="button"
       v-for="channel in channelStore.channels"
@@ -42,6 +42,11 @@ const channelStore = useChannelStore()
 const modal = reactive({
   addChannel: false
 })
+/* handle click */
+const handleClick = (channel) => {
+  channelStore.setPrivate(false)
+  channelStore.changeChannel(channel)
+}
 </script>
 
 <style scoped>

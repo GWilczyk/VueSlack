@@ -42,15 +42,13 @@ const messageStore = useMessageStore()
 /* send message */
 const sendMessage = () => {
   const author = authStore.user
-  const activeChannel = channelStore.activeChannel
+  const { activeChannel, isPrivate } = channelStore
 
-  if (
-    channelStore.activeChannel !== null &&
-    messageStore.message.trim().length > 0
-  ) {
+  if (activeChannel !== null && messageStore.message.trim().length > 0) {
     messageStore.sendMessage({
       author,
-      activeChannel
+      activeChannel,
+      isPrivate
     })
 
     /* reset message input */
