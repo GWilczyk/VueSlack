@@ -7,20 +7,33 @@
         <LoadingSpinner />
       </div>
       <!-- other users -->
-      <ul class="nav flex-column" v-else>
-        <li :key="user.id" v-for="user in otherUsers">
+
+      <div class="mt-4" v-else>
+        <button
+          class="list-group-item list-group-item-action"
+          :class="{ active: isActive(user.id) }"
+          @click.prevent="channelStore.createPrivateChannel(user)"
+          :key="user.id"
+          type="button"
+          v-for="user in otherUsers"
+        >
+          <i
+            :class="{
+              'fa fa-circle online': isOnline(user),
+              'fa fa-circle offline': !isOnline(user)
+            }"
+            aria-hidden="true"
+          ></i>
           <span>
             <img class="img rounded-circle" :src="user.avatar" height="20" />
             <span
-              :class="{
-                'text-primary': isOnline(user),
-                'text-danger': !isOnline(user)
-              }"
-              >{{ user.name }}</span
+              ><a :class="{ 'text-light': isActive(user.id) }" href="#">{{
+                user.name
+              }}</a></span
             >
           </span>
-        </li>
-      </ul>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -30,11 +43,13 @@
 import { computed } from 'vue'
 
 import { useAuthStore } from '@/stores/authStore'
+import { useChannelStore } from '@/stores/channelStore'
 import { useUserStore } from '@/stores/userStore'
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 /* store */
 const authStore = useAuthStore()
+const channelStore = useChannelStore()
 const userStore = useUserStore()
 /* other users */
 const otherUsers = computed(() =>
@@ -42,10 +57,22 @@ const otherUsers = computed(() =>
 )
 /* online/offline status */
 const isOnline = computed(() => (user) => user.status === 'online')
+/* private messaging */
+const isActive = computed(
+  () => (userId) =>
+    channelStore.activeChannel === channelStore.getChannelId(userId)
+)
 </script>
 
 <style scoped>
 .img {
+  margin-left: 10px;
   margin-right: 10px;
+}
+.offline {
+  color: red;
+}
+.online {
+  color: green;
 }
 </style>

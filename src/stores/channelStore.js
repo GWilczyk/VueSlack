@@ -8,6 +8,8 @@ import {
 } from 'firebase/firestore'
 
 import { firestoredb } from '@/js/firebase'
+
+import { useAuthStore } from '@/stores/authStore'
 import { useMessageStore } from '@/stores/messageStore'
 
 let channelsCollectionRef, channelsCollectionQuery
@@ -16,9 +18,11 @@ let unsubscribeChannelsSnapshots = null
 export const useChannelStore = defineStore('channelStore', {
   state: () => ({
     activeChannel: 0,
+    channel: null,
     channels: [],
     channelsLoaded: false,
     errors: [],
+    isPrivate: false,
     newChannel: ''
   }),
   actions: {
@@ -47,6 +51,20 @@ export const useChannelStore = defineStore('channelStore', {
       }
     },
 
+    createPrivateChannel(user) {
+      const date = new Date().getTime().toString()
+      const channelId = this.getChannelId(user.id)
+
+      const channel = {
+        content: user.name,
+        date,
+        id: channelId
+      }
+
+      this.setPrivate(true)
+      this.changeChannel(channel)
+    },
+
     getChannels() {
       const messageStore = useMessageStore()
 
@@ -69,6 +87,7 @@ export const useChannelStore = defineStore('channelStore', {
           if (this.channels.length) {
             /* initialize active channel */
             this.activeChannel = this.channels[0].id
+            this.channel = this.channels[0]
             /* initialize message store */
             this.channels.length && messageStore.init(this.activeChannel)
           }
@@ -82,22 +101,45 @@ export const useChannelStore = defineStore('channelStore', {
       )
     },
 
+    getChannelId(userId) {
+      const authStore = useAuthStore()
+
+      /* use this format to create channel smallerUserId/biggerUserId */
+      return userId < authStore.user.id
+        ? `${userId}/${authStore.user.id}`
+        : `${authStore.user.id}/${userId}`
+    },
+
     init() {
       channelsCollectionRef = collection(firestoredb, 'channels')
       channelsCollectionQuery = query(channelsCollectionRef, orderBy('date'))
+
       this.getChannels()
     }
   },
   getters: {
-    isChannelActive: (state) => (channelId) =>
-      channelId === state.activeChannel,
-    changeChannel: (state) => (channelId) => {
+    changeChannel: (state) => (channel) => {
       const messageStore = useMessageStore()
+
       messageStore.clearMessages()
 
-      state.activeChannel = channelId
+      state.activeChannel = channel.id
+      state.channel = channel
 
-      messageStore.init(channelId)
-    }
+      messageStore.init(channel.id)
+    },
+
+    getChannelName: (state) => (channel) => {
+      if (channel !== null) {
+        return state.isPrivate
+          ? `@ ${channel?.content}`
+          : `# ${channel?.content}`
+      }
+    },
+
+    isChannelActive: (state) => (channelId) =>
+      channelId === state.activeChannel,
+
+    setPrivate: (state) => (privacy) => (state.isPrivate = privacy)
   }
 })

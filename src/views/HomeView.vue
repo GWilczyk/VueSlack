@@ -6,7 +6,7 @@
       </div>
 
       <div class="col-md-8 messages">
-        <MessageContainer />
+        <MessagePart />
       </div>
 
       <ChannelModal />
@@ -18,7 +18,7 @@
 /* imports */
 import ChannelModal from '@/components/modals/ChannelModal.vue'
 import LeftSidebar from '@/components/sidebar/LeftSidebar.vue'
-import MessageContainer from '@/components/messages/MessageContainer.vue'
+import MessagePart from '@/components/messages/MessagePart.vue'
 </script>
 
 <style scoped>
