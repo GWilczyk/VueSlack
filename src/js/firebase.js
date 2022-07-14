@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getDatabase } from 'firebase/database'
 import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDMYhFM5yODPij3oQWBJ517ODIZhRfQA6I',
@@ -19,8 +20,10 @@ const app = initializeApp(firebaseConfig)
 const firebasedb = getDatabase(app)
 /* firestoredb is used to store channels and messages */
 const firestoredb = getFirestore(app)
+/* firebase storage to store */
+const firebaseStorage = getStorage(app)
 
 const auth = getAuth(app)
 auth.languageCode = 'fr'
 
-export { auth, firebasedb, firestoredb }
+export { auth, firebasedb, firebaseStorage, firestoredb }
