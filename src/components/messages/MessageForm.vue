@@ -1,5 +1,16 @@
 <template>
   <div class="message-form">
+    <!-- file upload progress bar -->
+    <div class="progress" v-if="fileUploadStore.uploadState">
+      <div
+        class="progress-bar progress-bar-striped progress-bar-animated"
+        role="progressbar"
+        :style="progressStyle"
+      >
+        {{ uploadLabel }}
+      </div>
+    </div>
+
     <form @submit.prevent="sendMessage">
       <div class="input-group">
         <input
@@ -22,39 +33,78 @@
         </div>
 
         <div class="input-group-append">
-          <button class="btn btn-warning my-3" type="button">Upload</button>
+          <button
+            class="btn btn-warning my-3"
+            type="button"
+            @click.prevent="modal.uploadFile = true"
+            :disabled="fileUploadStore.uploadState === 'uploading'"
+          >
+            Upload
+          </button>
         </div>
       </div>
     </form>
   </div>
+
+  <!-- modal to upload a file -->
+  <teleport to="#modal-container">
+    <FileUploadModal v-if="modal.uploadFile" v-model="modal.uploadFile" />
+  </teleport>
 </template>
 
 <script setup>
 /* imports */
-
-import { useAuthStore } from '@/stores/authStore'
+import { computed, onBeforeUnmount, reactive } from 'vue'
 import { useChannelStore } from '@/stores/channelStore'
+import { useFileUploadStore } from '@/stores/fileUploadStore'
 import { useMessageStore } from '@/stores/messageStore'
+
+import FileUploadModal from '@/components/modals/FileUploadModal.vue'
+
 /* store */
-const authStore = useAuthStore()
 const channelStore = useChannelStore()
+const fileUploadStore = useFileUploadStore()
 const messageStore = useMessageStore()
+
+/* modal */
+const modal = reactive({
+  uploadFile: false
+})
+
 /* send message */
 const sendMessage = () => {
-  const author = authStore.user
-  const { activeChannel, isPrivate } = channelStore
+  channelStore.activeChannel !== null &&
+    messageStore.message.trim().length > 0 &&
+    messageStore.sendMessage()
 
-  if (activeChannel !== null && messageStore.message.trim().length > 0) {
-    messageStore.sendMessage({
-      author,
-      activeChannel,
-      isPrivate
-    })
-
-    /* reset message input */
-    messageStore.message = ''
-  }
+  /* reset message input */
+  messageStore.message = ''
 }
+
+/* upload label */
+const uploadLabel = computed(() => {
+  switch (fileUploadStore.uploadState) {
+    case 'uploading':
+      return 'Uploading…'
+    case 'error':
+      return 'Error occurred!'
+    case 'done':
+      return 'Upload completed!'
+    default:
+      return ''
+  }
+})
+
+/* progress style */
+const progressStyle = computed(() => `width: ${fileUploadStore.progress}%`)
+
+/* remove uploading listener */
+onBeforeUnmount(() => {
+  if (fileUploadStore.uploadTask !== null) {
+    fileUploadStore.uploadTask.cancel()
+    fileUploadStore.uploadTask = null
+  }
+})
 </script>
 
 <style scoped>
@@ -66,8 +116,13 @@ const sendMessage = () => {
   z-index: 100;
   color: #fff;
   text-align: center;
-  margin-bottom: -16px;
+  margin-bottom: -20px;
   margin-left: 33%;
+}
+.progress {
+  border-radius: 0;
+  margin-bottom: -16px;
+  height: 36px;
 }
 input,
 button {

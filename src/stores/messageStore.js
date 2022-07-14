@@ -11,6 +11,7 @@ import {
 import { firestoredb } from '@/js/firebase'
 import { nextTick } from 'vue'
 
+import { useAuthStore } from '@/stores/authStore'
 import { useChannelStore } from '@/stores/channelStore'
 
 let messagesCollectionRef, messagesCollectionQuery
@@ -33,6 +34,26 @@ export const useMessageStore = defineStore('messageStore', {
       this.messages = []
       this.message = ''
       this.messagesLoaded = false
+    },
+
+    createMessage(fileURL) {
+      const authStore = useAuthStore()
+      const author = authStore.user
+
+      const message = {
+        author,
+        timestamp: serverTimestamp()
+      }
+
+      if (fileURL) {
+        /* either send message with image */
+        message['image'] = fileURL
+      } else {
+        /* or message with text */
+        message['content'] = this.message
+      }
+
+      return message
     },
 
     getMessages() {
@@ -89,14 +110,9 @@ export const useMessageStore = defineStore('messageStore', {
       this.getMessages()
     },
 
-    async sendMessage({ author }) {
+    async sendMessage(fileURL = '') {
       try {
-        const newMessage = {
-          author,
-          content: this.message,
-          timestamp: serverTimestamp()
-        }
-        await addDoc(messagesCollectionRef, newMessage)
+        await addDoc(messagesCollectionRef, this.createMessage(fileURL))
 
         /* scroll down to show this last new message */
         await nextTick(() => {

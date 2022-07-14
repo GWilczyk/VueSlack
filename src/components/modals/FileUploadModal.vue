@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 <template>
   <div class="modal-container" v-if="props.modelValue">
     <div class="overlay"></div>
@@ -11,7 +10,7 @@
       <div class="modal-content">
         <!-- Header -->
         <div class="modal-header">
-          <h5 class="modal-title">Create A Channel</h5>
+          <h5 class="modal-title">Upload File (jpg, jpeg, png) --- 1Mo max</h5>
           <button
             aria-label="Close"
             class="close"
@@ -24,28 +23,17 @@
         </div>
         <!-- Body -->
         <div class="modal-body">
-          <form @submit.prevent="handleSubmit">
+          <form>
             <div class="form-group">
               <input
                 class="form-control"
-                id="new_channel"
-                name="new_channel"
-                placeholder="Channel name…"
-                type="text"
-                v-model="channelStore.newChannel"
+                id="file"
+                name="file"
+                type="file"
+                @change="fileUploadStore.addFile"
                 v-autofocus
               />
             </div>
-            <!-- Errors status -->
-            <ul class="list-group" v-if="channelStore.errors.length">
-              <li
-                class="list-group-item text-danger"
-                :key="index"
-                v-for="(error, index) in channelStore.errors"
-              >
-                {{ error.message }}
-              </li>
-            </ul>
           </form>
         </div>
         <!-- Footer -->
@@ -54,7 +42,7 @@
             Cancel
           </button>
           <button class="btn btn-primary" type="button" @click="handleSubmit">
-            Add Channel
+            Send File
           </button>
         </div>
       </div>
@@ -68,9 +56,10 @@ import { ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { vAutofocus } from '@/directives/vAutofocus'
 
-import { useChannelStore } from '@/stores/channelStore'
+import { useFileUploadStore } from '@/stores/fileUploadStore'
 /* store */
-const channelStore = useChannelStore()
+const fileUploadStore = useFileUploadStore()
+
 /* props */
 const props = defineProps({
   modelValue: {
@@ -78,22 +67,26 @@ const props = defineProps({
     default: false
   }
 })
+
 /* emits */
 const emit = defineEmits(['update:modelValue'])
+
 /* close modal */
 const closeModal = () => {
-  channelStore.newChannel = ''
+  fileUploadStore.file = null
   emit('update:modelValue', false)
 }
+
 /* click outside to close modal */
 const modalRef = ref(null)
 onClickOutside(modalRef, closeModal)
-/* add new channel */
+
+/* upload file */
 const handleSubmit = () => {
-  if (channelStore.newChannel.trim().length > 0) {
-    channelStore.createChannel()
+  if (fileUploadStore.file) {
+    fileUploadStore.sendFile()
+    closeModal()
   }
-  closeModal()
 }
 </script>
 

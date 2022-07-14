@@ -11,7 +11,16 @@
         <a href="#">{{ props.message.author.name }}</a> -
         {{ fromNow }}
       </h6>
-      <p :class="{ 'self-message': selfMessage }">
+
+      <img
+        alt=""
+        class="img img-responsive"
+        height="200"
+        :src="props.message.image"
+        v-if="hasImage"
+      />
+
+      <p :class="{ 'self-message': selfMessage }" v-else>
         {{ props.message.content }}
       </p>
     </div>
@@ -32,10 +41,15 @@ const props = defineProps({
 })
 /* store */
 const authStore = useAuthStore()
+
 /* format date */
 const fromNow = computed(() =>
   moment(props.message.timestamp?.seconds * 1000).fromNow()
 )
+
+/* check if message contains image (or text) */
+const hasImage = computed(() => !props.message.content && !!props.message.image)
+
 /* check if message has been written by the current user */
 const selfMessage = computed(
   () => props.message.author.id === authStore.user.id
