@@ -8,15 +8,12 @@
       <div class="col-md-8 messages">
         <MessagePart />
       </div>
-
-      <ChannelModal />
     </div>
   </div>
 </template>
 
 <script setup>
 /* imports */
-import ChannelModal from '@/components/modals/ChannelModal.vue'
 import LeftSidebar from '@/components/sidebar/LeftSidebar.vue'
 import MessagePart from '@/components/messages/MessagePart.vue'
 </script>

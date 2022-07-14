@@ -1,5 +1,8 @@
 <template>
-  <button class="btn btn-outline-primary" @click="modal.addChannel = true">
+  <button
+    class="btn btn-outline-primary"
+    @click.prevent="modal.addChannel = true"
+  >
     Add Channel
   </button>
 
