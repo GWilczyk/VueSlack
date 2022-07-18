@@ -41,10 +41,16 @@ export const useChannelStore = defineStore('channelStore', {
     async createChannel() {
       try {
         const date = new Date().getTime().toString()
-        await addDoc(channelsCollectionRef, {
+        const docRef = await addDoc(channelsCollectionRef, {
           content: this.newChannel,
           date
         })
+
+        const newChannel = {
+          content: this.newChannel,
+          id: docRef.id
+        }
+        return newChannel
       } catch (error) {
         console.error('Error: ', error.message)
         this.errors.push(error)
@@ -131,9 +137,7 @@ export const useChannelStore = defineStore('channelStore', {
 
     getChannelName: (state) => (channel) => {
       if (channel !== null) {
-        return state.isPrivate
-          ? `@ ${channel?.content}`
-          : `# ${channel?.content}`
+        return state.isPrivate ? `@ ${channel.content}` : `# ${channel.content}`
       }
     },
 

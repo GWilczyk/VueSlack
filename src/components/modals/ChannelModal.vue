@@ -80,18 +80,23 @@ const props = defineProps({
 })
 /* emits */
 const emit = defineEmits(['update:modelValue'])
+
 /* close modal */
 const closeModal = () => {
   channelStore.newChannel = ''
   emit('update:modelValue', false)
 }
+
 /* click outside to close modal */
 const modalRef = ref(null)
 onClickOutside(modalRef, closeModal)
+
 /* add new channel */
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (channelStore.newChannel.trim().length > 0) {
-    channelStore.createChannel()
+    const newChannel = await channelStore.createChannel()
+
+    channelStore.changeChannel(newChannel)
   }
   closeModal()
 }
