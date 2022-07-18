@@ -1,0 +1,23 @@
+{
+  "rules": {
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['avatar', 'name'])",
+        "name": {
+          ".validate": "newData.val().length > 0"
+        },
+        "avatar": {
+          ".validate": "newData.val().length > 0"
+        }
+      }
+    },
+
+    "presence": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
